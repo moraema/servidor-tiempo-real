@@ -7,6 +7,8 @@ const getList = async(req, res) => {
     try {
         const tarea = await Tarea.getTareas();
 
+
+
         return res.status(200).json({
             message: 'Se obtuvo la lista de las tareas',
             tarea
@@ -31,6 +33,10 @@ const getidtareas = async(req, res) => {
     });
 
 };
+
+
+
+
 
 // long polling
 
@@ -62,6 +68,8 @@ const getnuevoComentario = async(req, res) => {
     });
 };
 
+
+
 const crearComentario = async(req, res) => {
     const nuevoComentario = req.body.comentario;
 
@@ -76,7 +84,7 @@ const crearComentario = async(req, res) => {
 
         res.status(201).json({
             success: true,
-            message: "notificación creada"
+            message: "comentario creado"
         });
     } catch (error) {
         console.error(error);

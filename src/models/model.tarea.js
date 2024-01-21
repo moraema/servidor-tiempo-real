@@ -1,11 +1,11 @@
 const db = require('../configs/db.config');
 
 class Tarea {
-    constructor({ id, tarea, descripcion, status }) {
+    constructor({ id, tarea, descripcion, responsable }) {
         this.id = id;
         this.tarea = tarea;
         this.descripcion = descripcion;
-        this.status = status;
+        this.responsable = responsable;
     }
 
     static async getTareas() {
@@ -16,11 +16,11 @@ class Tarea {
 
     }
 
-    static async guardarTarea() {
+    async guardarTarea() {
         const connection = await db.createConnection();
 
         try {
-            const [result] = await connection.execute('INSERT INTO tareas (tarea, descripcion, status) VALUES (?, ?, ?)', [this.tarea, this.descripcion, this.status]);
+            const [result] = await connection.execute('INSERT INTO tareas (tarea, descripcion, responsable) VALUES (?, ?, ?)', [this.tarea, this.descripcion, this.responsable]);
 
             if (result.insertId === 0) {
                 throw new Error('No se insertó la tarea');
