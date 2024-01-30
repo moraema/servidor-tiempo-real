@@ -1,19 +1,23 @@
-// auth.middleware.js
 const jwt = require('jsonwebtoken');
-const secretJWT = process.env.SECRET_JWT;
+const secretJWT = process.env.JWT;
 
-const verifyJWT = (token) => {
-    return new Promise((resolve, reject) => {
-        jwt.verify(token, secretJWT, (err, decoded) => {
+const verifyJWT = (socket, next) => {
+    try {
+        const token = socket.handshake.token;
+
+        jwt.verify(token, secretJWT, (err, decode) => {
             if (err) {
-                reject(err);
-            } else {
-                resolve(decoded.user);
+                next(err);
             }
+
+            socket.user = decode;
+            next();
         });
-    });
-};
+    } catch (error) {
+        next(error);
+    }
+}
 
 module.exports = {
     verifyJWT
-};
+}

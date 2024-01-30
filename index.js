@@ -7,6 +7,8 @@ const { conectarWebsocket } = require('./socket/utils/util');
 
 
 const app = express();
+
+app.use(cors());
 const server = http.createServer(app);
 const io = new WebSocketServer(server, {
     cors: {
@@ -21,24 +23,6 @@ const tareaRouter = require('./src/routes/router.tarea');
 const usuarioRoute = require('./src/routes/user.route');
 app.use('/', tareaRouter);
 app.use('/', usuarioRoute);
-
-
-
-io.on('connection', (socket) => {
-    console.log('Nuevo cliente conectado');
-
-
-    socket.join('salaGeneral');
-    socket.emit('notificacion', 'Te has unido a nuestra sala principal');
-
-
-    socket.to('salaGeneral').emit('notificacion', 'Un nuevo usuario se ha unido a la sala');
-
-    socket.on('disconnect', () => {
-        console.log('Cliente desconectado');
-    });
-});
-
 
 
 server.listen(3000, () => {

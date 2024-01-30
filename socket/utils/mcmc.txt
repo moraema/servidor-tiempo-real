@@ -4,24 +4,70 @@ const server = http.createServer();
 const wss = new WebSocket.Server({ port: 4000 });
 const clients = new Set();
 const Tarea = require('../../src/models/model.tarea');
-// const { verifyJWT } = require('../../src/middleware/socket/auth.middleware');
-
-
 
 // conexion con websocket
 function conectarWebsocket() {
-    wss.on('connection', (ws, req) => {
+    wss.on('connection', (ws) => {
         console.log('Nuevo cliente conectado con Websocket');
 
-        /*
-        verifyJWT(ws, (err) => {
-            if (err) {
-                console.log('Error de authenticacion', err);
-                ws.close();
+        clients.add(ws);
+        enviarTareas();
 
+        ws.on('close', () => {
+            console.log('Cliente desconectado Websocket');
+            clients.delete(ws);
+        });
+    });
+
+}
+
+function sendPushNotification(message) {
+    // notificacion a los clientes que se agrego una nueva tarea
+    clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify({ type: 'notification', message }));
+        }
+    });
+}
+
+async function enviarTareas() {
+    try {
+        const tareas = await Tarea.getTareas();
+
+        // enviar los datos a los clientes
+        wss.clients.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify({
+                    type: 'tareas',
+                    tareas: tareas
+                }));
             }
-        })
-*/
+        });
+    } catch (error) {
+        console.log('Hubo un erro al obterner las tareas ', error)
+    }
+}
+
+module.exports = {
+    wss,
+    sendPushNotification,
+    conectarWebsocket,
+    enviarTareas
+};
+
+
+const WebSocket = require('ws');
+const http = require('http');
+const server = http.createServer();
+const wss = new WebSocket.Server({ port: 4000 });
+const clients = new Set();
+const Tarea = require('../../src/models/model.tarea');
+
+// conexion con websocket
+function conectarWebsocket() {
+    wss.on('connection', (ws) => {
+        console.log('Nuevo cliente conectado con Websocket');
+
         clients.add(ws);
 
         // enviar el paquete cuando se reconecte 

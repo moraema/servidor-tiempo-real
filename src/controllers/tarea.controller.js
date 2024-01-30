@@ -1,6 +1,9 @@
 const Tarea = require('../models/model.tarea');
-const { sendPushNotification } = require('../../socket/utils/util');
+const { sendPushNotification, enviarTareas } = require('../../socket/utils/util');
+const io = require('socket.io')();
 
+
+// Websocket notificacion
 const crearTarea = async(req, res) => {
     const { tarea, descripcion, responsable } = req.body;
 
@@ -13,7 +16,10 @@ const crearTarea = async(req, res) => {
     try {
         await tareas.guardarTarea();
 
+
         sendPushNotification('Nueva tarea agregada');
+
+        enviarTareas();
 
 
         res.status(201).json({
@@ -29,6 +35,7 @@ const crearTarea = async(req, res) => {
     }
 };
 
+
 module.exports = {
-    crearTarea,
+    crearTarea
 };

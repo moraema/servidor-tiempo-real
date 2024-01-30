@@ -9,15 +9,7 @@ router.get('/actualizar', authMiddleware.verifyToken, shortController.getidtarea
 router.get('/comentarios', authMiddleware.verifyToken, shortController.getComentarios);
 router.get('/nuevo-comentario', authMiddleware.verifyToken, shortController.getnuevoComentario);
 router.post('/crear-comentario', authMiddleware.verifyToken, shortController.crearComentario);
+router.post('/crear-tarea', authMiddleware.verifyToken, crearTarea);
 
-
-
-router.post('/crear-tarea', async(req, res) => {
-    try {
-        await crearTarea(req, res);
-    } catch (error) {
-        console.error('Error al crear tarea:', error);
-    }
-});
 
 module.exports = router;
